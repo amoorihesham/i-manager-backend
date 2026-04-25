@@ -4,19 +4,19 @@ import { eq } from 'drizzle-orm';
 import { usersTable } from '@/db/schemas/user.js';
 import { _comparePassword, _hashPassword } from './utils/hashing.js';
 import { _generateJwtToken } from './utils/jwt.js';
-import { env } from '@/config/env.js';
+import { Env } from '@/config/env.js';
 
 type AuthService = {
   register: (payload: RegisterInput) => Promise<RegisterFunctionReturnType>;
   login: (payload: LoginInput) => Promise<LoginFunctionReturnType>;
 };
 
-export const authService = (db: Database): AuthService => ({
+export const authService = (db: Database, config: Env): AuthService => ({
   register: async ({ username, email, password }) => {
     const exist = await db.query.usersTable.findFirst({ where: eq(usersTable.email, email) });
     if (exist) throw new Error('user already exist');
 
-    const hasedPassword = await _hashPassword(password);
+    const hasedPassword = await _hashPassword(password, config.SALT_ROUND);
     const [created] = await db.insert(usersTable).values({ username, email, password: hasedPassword }).returning({
       id: usersTable.id,
       username: usersTable.username,
@@ -36,8 +36,8 @@ export const authService = (db: Database): AuthService => ({
     if (!isPasswordMatch) throw new Error('invalid credentials');
 
     const { password: _, ...created } = exist;
-    const accessToken = _generateJwtToken(created, env.JWT_SECRET, { expiresIn: env.JWT_ACCESS_TOKEN_TTL });
-    const refreshToken = _generateJwtToken(created, env.JWT_SECRET, { expiresIn: env.JWT_REFRESH_TOKEN_TTL });
+    const accessToken = _generateJwtToken(created, config.JWT_SECRET, { expiresIn: config.JWT_ACCESS_TOKEN_TTL });
+    const refreshToken = _generateJwtToken(created, config.JWT_SECRET, { expiresIn: config.JWT_REFRESH_TOKEN_TTL });
 
     return { accessToken, refreshToken, ...created };
   },

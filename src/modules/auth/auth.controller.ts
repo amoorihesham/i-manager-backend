@@ -4,9 +4,10 @@ import { authService } from './auth.service.js';
 import { LoginInput, RegisterInput } from './types/index.js';
 import { STATUS_CODES } from '@/config/constants.js';
 import { _sendSuccessResponse } from '@/utils/http.js';
+import { Env } from '@/config/env.js';
 
-export const authController = (db: Database) => {
-  const service = authService(db);
+export const authController = (db: Database,config:Env) => {
+  const service = authService(db,config);
 
   return {
     register: async (request: FastifyRequest<{ Body: RegisterInput }>, reply: FastifyReply) => {
