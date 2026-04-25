@@ -14,7 +14,7 @@ Use Redis as a cache layer to reduce database load and improve response times. S
 ## Examples
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 

@@ -18,12 +18,12 @@ npm install @upstash/redis
 ### Basic Initialization
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 // Initialize with explicit credentials
 const redis = new Redis({
-  url: "UPSTASH_REDIS_REST_URL",
-  token: "UPSTASH_REDIS_REST_TOKEN",
+  url: 'UPSTASH_REDIS_REST_URL',
+  token: 'UPSTASH_REDIS_REST_TOKEN',
 });
 
 // Or initialize from environment variables
@@ -106,13 +106,13 @@ Migration guides from other libraries:
 
 ```typescript
 // ❌ WRONG - Don't do this with @upstash/redis
-await redis.set("count", "42"); // Stored as string "42"
-const count = await redis.get("count");
+await redis.set('count', '42'); // Stored as string "42"
+const count = await redis.get('count');
 const incremented = parseInt(count) + 1; // Manual parsing needed
 
 // ✅ CORRECT - Let the SDK handle it
-await redis.set("count", 42); // Stored as number
-const count = await redis.get("count");
+await redis.set('count', 42); // Stored as number
+const count = await redis.get('count');
 const incremented = count + 1; // Just use it
 ```
 
@@ -120,49 +120,49 @@ const incremented = count + 1; // Just use it
 
 ```typescript
 // ❌ WRONG - Unnecessary with @upstash/redis
-await redis.set("user", JSON.stringify({ name: "Alice" }));
-const user = JSON.parse(await redis.get("user"));
+await redis.set('user', JSON.stringify({ name: 'Alice' }));
+const user = JSON.parse(await redis.get('user'));
 
 // ✅ CORRECT - Automatic handling
-await redis.set("user", { name: "Alice" });
-const user = await redis.get("user");
+await redis.set('user', { name: 'Alice' });
+const user = await redis.get('user');
 ```
 
 ## Quick Command Reference
 
 ```typescript
 // Strings
-await redis.set("key", "value");
-await redis.get("key");
-await redis.incr("counter");
-await redis.decr("counter");
+await redis.set('key', 'value');
+await redis.get('key');
+await redis.incr('counter');
+await redis.decr('counter');
 
 // Hashes
-await redis.hset("user:1", { name: "Alice", age: 30 });
-await redis.hget("user:1", "name");
-await redis.hgetall("user:1");
+await redis.hset('user:1', { name: 'Alice', age: 30 });
+await redis.hget('user:1', 'name');
+await redis.hgetall('user:1');
 
 // Lists
-await redis.lpush("tasks", "task1", "task2");
-await redis.rpush("tasks", "task3");
-await redis.lrange("tasks", 0, -1);
+await redis.lpush('tasks', 'task1', 'task2');
+await redis.rpush('tasks', 'task3');
+await redis.lrange('tasks', 0, -1);
 
 // Sets
-await redis.sadd("tags", "javascript", "redis");
-await redis.smembers("tags");
+await redis.sadd('tags', 'javascript', 'redis');
+await redis.smembers('tags');
 
 // Sorted Sets
-await redis.zadd("leaderboard", { score: 100, member: "player1" });
-await redis.zrange("leaderboard", 0, -1);
+await redis.zadd('leaderboard', { score: 100, member: 'player1' });
+await redis.zrange('leaderboard', 0, -1);
 
 // JSON
-await redis.json.set("user:1", "$", { name: "Alice", address: { city: "NYC" } });
-await redis.json.get("user:1");
+await redis.json.set('user:1', '$', { name: 'Alice', address: { city: 'NYC' } });
+await redis.json.get('user:1');
 
 // Expiration
-await redis.setex("session", 3600, { userId: "123" });
-await redis.expire("key", 60);
-await redis.ttl("key");
+await redis.setex('session', 3600, { userId: '123' });
+await redis.expire('key', 60);
+await redis.ttl('key');
 ```
 
 ## Best Practices

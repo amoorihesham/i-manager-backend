@@ -15,6 +15,11 @@ export const envSchema = z.object({
   SMTP_SERVER_PORT: z.number(),
   SMTP_SERVER_USERNAME: z.string(),
   SMTP_SERVER_PASSWORD: z.string(),
+  STRIPE_SECRET_KEY: z.string(),
+  STRIPE_WEBHOOK_SECRET: z.string(),
+  STRIPE_PRICE_ID_PRO: z.string(),
+  STRIPE_PRICE_ID_ULTRA: z.string(),
+  APP_FRONTEND_URL: z.string(),
 });
 
 export type Env = z.infer<typeof envSchema>;

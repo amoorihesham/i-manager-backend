@@ -15,23 +15,23 @@ Index aliases provide an indirection layer between your application and the actu
 ### Add an Alias
 
 ```typescript
-import { Redis, s } from "@upstash/redis";
+import { Redis, s } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
 // Create an index
 const index = await redis.search.createIndex({
-  name: "products-v1",
-  prefix: "product:",
-  dataType: "json",
-  schema: s.object({ name: s.string(), price: s.number("F64") }),
+  name: 'products-v1',
+  prefix: 'product:',
+  dataType: 'json',
+  schema: s.object({ name: s.string(), price: s.number('F64') }),
 });
 
 // Add alias via the index instance
-await index.addAlias({ alias: "products" });
+await index.addAlias({ alias: 'products' });
 
 // Or via the redis.search.alias API
-await redis.search.alias.add({ indexName: "products-v1", alias: "products" });
+await redis.search.alias.add({ indexName: 'products-v1', alias: 'products' });
 ```
 
 ### List All Aliases
@@ -44,7 +44,7 @@ const aliases = await redis.search.alias.list();
 ### Delete an Alias
 
 ```typescript
-await redis.search.alias.delete({ alias: "products" });
+await redis.search.alias.delete({ alias: 'products' });
 // Returns 1 if deleted, 0 if alias didn't exist
 ```
 
@@ -53,12 +53,12 @@ await redis.search.alias.delete({ alias: "products" });
 ```typescript
 // 1. Create new index with updated schema
 const newIndex = await redis.search.createIndex({
-  name: "products-v2",
-  prefix: "product:",
-  dataType: "json",
+  name: 'products-v2',
+  prefix: 'product:',
+  dataType: 'json',
   schema: s.object({
     name: s.string(),
-    price: s.number("F64"),
+    price: s.number('F64'),
     description: s.string(), // new field
   }),
 });
@@ -68,9 +68,9 @@ await newIndex.waitIndexing();
 
 // 3. Atomically swap the alias to the new index
 // (addAlias updates the alias if it already exists)
-await redis.search.alias.add({ indexName: "products-v2", alias: "products" });
+await redis.search.alias.add({ indexName: 'products-v2', alias: 'products' });
 
 // 4. Drop the old index
-const oldIndex = redis.search.index({ name: "products" });
+const oldIndex = redis.search.index({ name: 'products' });
 await oldIndex.drop();
 ```

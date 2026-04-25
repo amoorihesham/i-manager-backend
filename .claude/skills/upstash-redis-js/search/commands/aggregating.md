@@ -17,51 +17,51 @@ Run analytics over indexed data using metric and bucket aggregations. Compute st
 ### Metric Aggregations
 
 ```typescript
-import { Redis, s } from "@upstash/redis";
+import { Redis, s } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
 const index = await redis.search.createIndex({
-  name: "orders",
-  prefix: "order:",
-  dataType: "json",
+  name: 'orders',
+  prefix: 'order:',
+  dataType: 'json',
   schema: s.object({
     product: s.string(),
     category: s.facet(),
-    price: s.number("F64"),
-    quantity: s.number("U64"),
+    price: s.number('F64'),
+    quantity: s.number('U64'),
     date: s.date(),
   }),
 });
 
 // Insert sample data
-await redis.json.set("order:1", "$", {
-  product: "Laptop",
-  category: "electronics",
+await redis.json.set('order:1', '$', {
+  product: 'Laptop',
+  category: 'electronics',
   price: 999.99,
   quantity: 1,
-  date: "2024-06-15",
+  date: '2024-06-15',
 });
-await redis.json.set("order:2", "$", {
-  product: "Mouse",
-  category: "electronics",
+await redis.json.set('order:2', '$', {
+  product: 'Mouse',
+  category: 'electronics',
   price: 29.99,
   quantity: 3,
-  date: "2024-06-16",
+  date: '2024-06-16',
 });
-await redis.json.set("order:3", "$", {
-  product: "Desk",
-  category: "furniture",
+await redis.json.set('order:3', '$', {
+  product: 'Desk',
+  category: 'furniture',
   price: 249.99,
   quantity: 1,
-  date: "2024-07-01",
+  date: '2024-07-01',
 });
 await index.waitIndexing();
 
 // Average price
 const result = await index.aggregate({
   aggregations: {
-    avg_price: { $avg: { field: "price" } },
+    avg_price: { $avg: { field: 'price' } },
   },
 });
 // result.avg_price -> number
@@ -69,18 +69,18 @@ const result = await index.aggregate({
 // Multiple metrics at once
 const stats = await index.aggregate({
   aggregations: {
-    avg_price: { $avg: { field: "price" } },
-    total_revenue: { $sum: { field: "price" } },
-    cheapest: { $min: { field: "price" } },
-    most_expensive: { $max: { field: "price" } },
-    order_count: { $count: { field: "price" } },
+    avg_price: { $avg: { field: 'price' } },
+    total_revenue: { $sum: { field: 'price' } },
+    cheapest: { $min: { field: 'price' } },
+    most_expensive: { $max: { field: 'price' } },
+    order_count: { $count: { field: 'price' } },
   },
 });
 
 // Combined statistics
 const priceStats = await index.aggregate({
   aggregations: {
-    price_stats: { $stats: { field: "price" } },
+    price_stats: { $stats: { field: 'price' } },
     // Returns: { count, min, max, sum, avg }
   },
 });
@@ -88,7 +88,7 @@ const priceStats = await index.aggregate({
 // Extended statistics (includes variance and standard deviation)
 const extended = await index.aggregate({
   aggregations: {
-    price_extended: { $extendedStats: { field: "price" } },
+    price_extended: { $extendedStats: { field: 'price' } },
     // Returns: { count, min, max, sum, avg, sumOfSquares, variance, stdDeviation }
   },
 });
@@ -96,14 +96,14 @@ const extended = await index.aggregate({
 // Percentiles
 const percentiles = await index.aggregate({
   aggregations: {
-    price_percentiles: { $percentiles: { field: "price", percents: [25, 50, 75, 95] } },
+    price_percentiles: { $percentiles: { field: 'price', percents: [25, 50, 75, 95] } },
   },
 });
 
 // Count distinct values
 const uniqueCategories = await index.aggregate({
   aggregations: {
-    unique_cats: { $cardinality: { field: "category" } },
+    unique_cats: { $cardinality: { field: 'category' } },
   },
 });
 ```
@@ -116,7 +116,7 @@ const uniqueCategories = await index.aggregate({
 const byCategory = await index.aggregate({
   aggregations: {
     categories: {
-      $terms: { field: "category", size: 10 },
+      $terms: { field: 'category', size: 10 },
     },
   },
 });
@@ -130,7 +130,7 @@ const priceRanges = await index.aggregate({
   aggregations: {
     price_ranges: {
       $range: {
-        field: "price",
+        field: 'price',
         ranges: [
           { to: 50 }, // Under $50
           { from: 50, to: 200 }, // $50-$200
@@ -148,7 +148,7 @@ const priceRanges = await index.aggregate({
 const priceHistogram = await index.aggregate({
   aggregations: {
     price_distribution: {
-      $histogram: { field: "price", interval: 100 },
+      $histogram: { field: 'price', interval: 100 },
     },
   },
 });
@@ -159,7 +159,7 @@ const priceHistogram = await index.aggregate({
 ```typescript
 const facets = await index.aggregate({
   aggregations: {
-    brand_facets: { $facet: { field: "brand" } },
+    brand_facets: { $facet: { field: 'brand' } },
   },
 });
 ```
@@ -173,12 +173,12 @@ Combine buckets with metrics for multi-level analysis:
 const result = await index.aggregate({
   aggregations: {
     by_category: {
-      $terms: { field: "category" },
+      $terms: { field: 'category' },
       $aggs: {
-        avg_price: { $avg: { field: "price" } },
-        min_price: { $min: { field: "price" } },
-        max_price: { $max: { field: "price" } },
-        total_orders: { $count: { field: "price" } },
+        avg_price: { $avg: { field: 'price' } },
+        min_price: { $min: { field: 'price' } },
+        max_price: { $max: { field: 'price' } },
+        total_orders: { $count: { field: 'price' } },
       },
     },
   },
@@ -195,12 +195,12 @@ Apply a filter before aggregating:
 
 ```typescript
 const electronicsStats = await index.aggregate({
-  filter: { category: { $eq: "electronics" } },
+  filter: { category: { $eq: 'electronics' } },
   aggregations: {
-    avg_price: { $avg: { field: "price" } },
+    avg_price: { $avg: { field: 'price' } },
     price_ranges: {
       $range: {
-        field: "price",
+        field: 'price',
         ranges: [{ to: 100 }, { from: 100, to: 500 }, { from: 500 }],
       },
     },

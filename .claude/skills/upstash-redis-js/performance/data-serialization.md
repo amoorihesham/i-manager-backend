@@ -23,13 +23,13 @@ Automatic serialization preserves JavaScript types across Redis operations. Numb
 ### Basic Type Preservation
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
 // Numbers preserved
-await redis.set("age", 42);
-const age = await redis.get("age");
+await redis.set('age', 42);
+const age = await redis.get('age');
 console.log(typeof age); // "number"
 console.log(age === 42); // true
 
@@ -38,30 +38,30 @@ console.log(age === 42); // true
 // @upstash/redis: returns 42 (number)
 
 // Booleans preserved
-await redis.set("active", true);
-const active = await redis.get("active");
+await redis.set('active', true);
+const active = await redis.get('active');
 console.log(typeof active); // "boolean"
 
 // Objects preserved
-await redis.set("user", { name: "Alice", age: 30 });
-const user = await redis.get("user");
+await redis.set('user', { name: 'Alice', age: 30 });
+const user = await redis.get('user');
 console.log(user.name); // "Alice"
 console.log(user.age); // 30 (number, not string)
 
 // Arrays preserved
-await redis.set("scores", [100, 200, 300]);
-const scores = await redis.get<number[]>("scores");
+await redis.set('scores', [100, 200, 300]);
+const scores = await redis.get<number[]>('scores');
 console.log(scores[0]); // 100 (number)
 
 // Nested structures preserved
-await redis.set("data", {
-  user: { name: "Alice", age: 30 },
+await redis.set('data', {
+  user: { name: 'Alice', age: 30 },
   scores: [100, 200, 300],
   active: true,
   count: 42,
 });
 
-const data = await redis.get<any>("data");
+const data = await redis.get<any>('data');
 console.log(typeof age); // "number"
 console.log(Array.isArray(data.scores)); // true
 ```
@@ -69,13 +69,13 @@ console.log(Array.isArray(data.scores)); // true
 ### Complex Types
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
 // Date objects become ISO strings
-await redis.set("created", new Date());
-const created = await redis.get<string>("created");
+await redis.set('created', new Date());
+const created = await redis.get<string>('created');
 console.log(typeof created); // "string"
 console.log(created); // "2024-01-01T00:00:00.000Z"
 
@@ -90,10 +90,10 @@ class User {
   }
 }
 
-const alice = new User("Alice");
-await redis.set("instance", alice);
+const alice = new User('Alice');
+await redis.set('instance', alice);
 
-const retrieved = await redis.get<any>("instance");
+const retrieved = await redis.get<any>('instance');
 console.log(retrieved.name); // "Alice"
 console.log(retrieved.greet); // undefined (method lost)
 
@@ -110,14 +110,14 @@ class SerializableUser {
   }
 }
 
-await redis.set("ser_user", SerializableUser.toRedis(alice));
-const serRetrieved = SerializableUser.fromRedis(await redis.get("ser_user"));
+await redis.set('ser_user', SerializableUser.toRedis(alice));
+const serRetrieved = SerializableUser.fromRedis(await redis.get('ser_user'));
 ```
 
 ### Disabling Auto-Serialization
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 // Disable auto-serialization if needed
 const redis = new Redis({
@@ -126,8 +126,8 @@ const redis = new Redis({
   automaticDeserialization: false,
 });
 
-await redis.set("key", JSON.stringify({ value: 42 }));
-const raw = await redis.get("key");
+await redis.set('key', JSON.stringify({ value: 42 }));
+const raw = await redis.get('key');
 console.log(typeof raw); // "string"
 const parsed = JSON.parse(raw as string);
 ```

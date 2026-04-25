@@ -20,18 +20,18 @@ Distributed locks prevent concurrent access to shared resources across multiple 
 ## Examples
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
 // Simple lock with SET NX
 async function acquireLock(lockKey: string, ttl: number = 10): Promise<boolean> {
-  const acquired = await redis.set(lockKey, "locked", {
+  const acquired = await redis.set(lockKey, 'locked', {
     nx: true, // Only set if not exists
     ex: ttl, // Expire after ttl seconds
   });
 
-  return acquired === "OK";
+  return acquired === 'OK';
 }
 
 async function releaseLock(lockKey: string) {
@@ -45,7 +45,7 @@ async function processJob(jobId: string) {
   const acquired = await acquireLock(lockKey, 30);
 
   if (!acquired) {
-    console.log("Job already being processed");
+    console.log('Job already being processed');
     return;
   }
 
@@ -60,7 +60,7 @@ async function processJob(jobId: string) {
 // Lock with unique token (prevents accidental unlock by others)
 async function acquireLockWithToken(lockKey: string, token: string, ttl: number = 10) {
   const acquired = await redis.set(lockKey, token, { nx: true, ex: ttl });
-  return acquired === "OK";
+  return acquired === 'OK';
 }
 
 async function releaseLockWithToken(lockKey: string, token: string) {
@@ -116,13 +116,13 @@ async function processWebhook(webhookId: string, data: any) {
   const acquired = await acquireLock(lockKey, 60);
 
   if (!acquired) {
-    console.log("Webhook already processed");
-    return { status: "duplicate" };
+    console.log('Webhook already processed');
+    return { status: 'duplicate' };
   }
 
   try {
     await handleWebhook(data);
-    return { status: "processed" };
+    return { status: 'processed' };
   } finally {
     await releaseLock(lockKey);
   }

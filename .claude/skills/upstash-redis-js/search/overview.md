@@ -25,20 +25,20 @@ All three packages expose the same search API. See [adapters.md](./adapters.md) 
 Schemas define which fields are indexed and how. Use the `s` schema builder for type-safe definitions:
 
 ```typescript
-import { Redis, s } from "@upstash/redis";
+import { Redis, s } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
 const index = await redis.search.createIndex({
-  name: "products",
-  prefix: "product:",
-  dataType: "json",
+  name: 'products',
+  prefix: 'product:',
+  dataType: 'json',
   schema: s.object({
     name: s.string(), // TEXT - full-text searchable
     description: s.string().noStem(), // TEXT without stemming
     sku: s.string().noTokenize(), // TEXT stored as-is (no splitting)
-    price: s.number("F64"), // floating point number
-    stock: s.number("U64"), // unsigned 64-bit integer
+    price: s.number('F64'), // floating point number
+    stock: s.number('U64'), // unsigned 64-bit integer
     inStock: s.boolean(), // boolean
     createdAt: s.date(), // date
     category: s.keyword(), // exact-match keyword
@@ -90,22 +90,22 @@ There is no `index.upsert()` or `index.add()` method. You store data using stand
 ```typescript
 // Create the index
 const index = await redis.search.createIndex({
-  name: "users",
-  prefix: "user:",
-  dataType: "json",
-  schema: s.object({ name: s.string(), age: s.number("U64") }),
+  name: 'users',
+  prefix: 'user:',
+  dataType: 'json',
+  schema: s.object({ name: s.string(), age: s.number('U64') }),
 });
 
 // Upsert data with regular Redis commands
-await redis.json.set("user:1", "$", { name: "Alice", age: 30 });
-await redis.json.set("user:2", "$", { name: "Bob", age: 25 });
+await redis.json.set('user:1', '$', { name: 'Alice', age: 30 });
+await redis.json.set('user:2', '$', { name: 'Bob', age: 25 });
 
 // Wait for the index to process the new data
 await index.waitIndexing();
 
 // Now you can query
 const results = await index.query({
-  filter: { name: { $eq: "Alice" } },
+  filter: { name: { $eq: 'Alice' } },
 });
 ```
 
@@ -116,14 +116,14 @@ Index updates are batched. After upserting or deleting data, the index may not i
 ```typescript
 // Batch upsert many documents
 for (const product of products) {
-  await redis.json.set(`product:${product.id}`, "$", product);
+  await redis.json.set(`product:${product.id}`, '$', product);
 }
 
 // Call waitIndexing ONCE after all upserts (not after each one)
 await index.waitIndexing();
 
 // Now queries will return up-to-date results
-const results = await index.query({ filter: { category: { $eq: "electronics" } } });
+const results = await index.query({ filter: { category: { $eq: 'electronics' } } });
 ```
 
 ### Tokenization splits text at word boundaries

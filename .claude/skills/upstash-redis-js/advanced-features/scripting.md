@@ -19,7 +19,7 @@ Execute Lua scripts atomically on Redis server. Scripts run as a single atomic o
 ## Examples
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
@@ -32,7 +32,7 @@ const script = `
   return current
 `;
 
-const result = await redis.eval(script, ["counter"], [100]);
+const result = await redis.eval(script, ['counter'], [100]);
 // Increments only if current value < 100
 
 // Atomic rate limiter
@@ -56,14 +56,14 @@ const rateLimitScript = `
 
 const allowed = await redis.eval<number>(
   rateLimitScript,
-  ["ratelimit:user:123"],
+  ['ratelimit:user:123'],
   [10, 60] // 10 requests per 60 seconds
 );
 
 if (allowed === 1) {
-  console.log("Request allowed");
+  console.log('Request allowed');
 } else {
-  console.log("Rate limit exceeded");
+  console.log('Rate limit exceeded');
 }
 
 // Script with multiple operations
@@ -94,7 +94,7 @@ const purchaseScript = `
 
 const purchase = await redis.eval<{ err?: string; ok?: string }>(
   purchaseScript,
-  ["inventory:item:1", "balance:user:123"],
+  ['inventory:item:1', 'balance:user:123'],
   [5, 20] // Buy 5 items at 20 each
 );
 
@@ -102,7 +102,7 @@ const purchase = await redis.eval<{ err?: string; ok?: string }>(
 const scriptSha = await redis.scriptLoad(rateLimitScript);
 
 // Use cached script (faster)
-const allowed2 = await redis.evalsha<number>(scriptSha, ["ratelimit:user:456"], [10, 60]);
+const allowed2 = await redis.evalsha<number>(scriptSha, ['ratelimit:user:456'], [10, 60]);
 
 // Conditional update script
 const setIfHigherScript = `
@@ -118,7 +118,7 @@ const setIfHigherScript = `
   return 0
 `;
 
-const updated = await redis.eval<number>(setIfHigherScript, ["high_score:user:123"], [1500]);
+const updated = await redis.eval<number>(setIfHigherScript, ['high_score:user:123'], [1500]);
 
-console.log(updated === 1 ? "New high score!" : "Score not higher");
+console.log(updated === 1 ? 'New high score!' : 'Score not higher');
 ```

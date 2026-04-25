@@ -23,7 +23,7 @@ Handle Redis errors gracefully with try-catch, implement retry logic for transie
 ### Built-in Retry Configuration
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 // Default: 5 retries with exponential backoff
 const redis = Redis.fromEnv();
@@ -62,7 +62,7 @@ const redisCustomBackoff = new Redis({
 ### Request Cancellation with AbortSignal
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
@@ -73,10 +73,10 @@ const redisWithTimeout = new Redis({
 });
 
 try {
-  await redisWithTimeout.get("key");
+  await redisWithTimeout.get('key');
 } catch (error) {
-  if (error.name === "TimeoutError") {
-    console.error("Request timed out");
+  if (error.name === 'TimeoutError') {
+    console.error('Request timed out');
   }
 }
 ```

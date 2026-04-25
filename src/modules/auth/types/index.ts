@@ -1,8 +1,8 @@
-import z from 'zod';
-import { loginSchema, registerSchema } from '../schemas/index.js';
-import { InferInsertModel } from 'drizzle-orm';
-import { usersTable } from '@/db/schemas/user.js';
-import { JwtPayload } from 'jsonwebtoken';
+import type z from 'zod';
+import type { loginSchema, registerSchema } from '../schemas/index.js';
+import type { InferInsertModel } from 'drizzle-orm';
+import type { usersTable } from '@/db/schemas/user.js';
+import type { JwtPayload } from 'jsonwebtoken';
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;

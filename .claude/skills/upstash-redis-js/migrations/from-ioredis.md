@@ -18,43 +18,43 @@ Migrate from ioredis to @upstash/redis by removing manual serialization, using R
 **ioredis:**
 
 ```typescript
-import Redis from "ioredis";
+import Redis from 'ioredis';
 
 const redis = new Redis({
-  host: "localhost",
+  host: 'localhost',
   port: 6379,
 });
 
 // Manual serialization required
-const user = { name: "Alice", age: 30 };
-await redis.set("user:1", JSON.stringify(user));
+const user = { name: 'Alice', age: 30 };
+await redis.set('user:1', JSON.stringify(user));
 
-const raw = await redis.get("user:1");
+const raw = await redis.get('user:1');
 const retrieved = JSON.parse(raw!); // Manual parsing
 
 // Numbers returned as strings
-await redis.set("count", "42");
-const count = await redis.get("count"); // "42" (string)
+await redis.set('count', '42');
+const count = await redis.get('count'); // "42" (string)
 const numCount = parseInt(count!, 10); // Convert manually
 ```
 
 **@upstash/redis:**
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
 // Automatic serialization
-const user = { name: "Alice", age: 30 };
-await redis.set("user:1", user); // No JSON.stringify
+const user = { name: 'Alice', age: 30 };
+await redis.set('user:1', user); // No JSON.stringify
 
-const retrieved = await redis.get("user:1"); // Automatic parsing
+const retrieved = await redis.get('user:1'); // Automatic parsing
 console.log(retrieved.name); // "Alice"
 
 // Numbers preserved
-await redis.set("count", 42);
-const count = await redis.get("count"); // 42 (number)
+await redis.set('count', 42);
+const count = await redis.get('count'); // 42 (number)
 ```
 
 ### Connection Initialization
@@ -62,19 +62,19 @@ const count = await redis.get("count"); // 42 (number)
 **ioredis:**
 
 ```typescript
-import Redis from "ioredis";
+import Redis from 'ioredis';
 
 const redis = new Redis({
-  host: "redis.upstash.io",
+  host: 'redis.upstash.io',
   port: 6379,
-  password: "your-password",
+  password: 'your-password',
 });
 ```
 
 **@upstash/redis:**
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 const redis = new Redis({
   url: process.env.UPSTASH_REDIS_REST_URL!,
@@ -91,20 +91,20 @@ const redis = Redis.fromEnv();
 
 ```typescript
 // SET with expiration (positional args)
-await redis.set("key", "value", "EX", 3600);
+await redis.set('key', 'value', 'EX', 3600);
 
 // ZADD
-await redis.zadd("leaderboard", 100, "player:1");
+await redis.zadd('leaderboard', 100, 'player:1');
 ```
 
 **@upstash/redis:**
 
 ```typescript
 // SET with expiration (options object)
-await redis.set("key", "value", { ex: 3600 });
+await redis.set('key', 'value', { ex: 3600 });
 
 // ZADD
-await redis.zadd("leaderboard", { score: 100, member: "player:1" });
+await redis.zadd('leaderboard', { score: 100, member: 'player:1' });
 ```
 
 ### Pipelines
@@ -113,9 +113,9 @@ await redis.zadd("leaderboard", { score: 100, member: "player:1" });
 
 ```typescript
 const pipeline = redis.pipeline();
-pipeline.set("key1", "value1");
-pipeline.set("key2", "value2");
-pipeline.get("key1");
+pipeline.set('key1', 'value1');
+pipeline.set('key2', 'value2');
+pipeline.get('key1');
 const results = await pipeline.exec();
 // Results: [[null, "OK"], [null, "OK"], [null, "value1"]]
 ```
@@ -124,9 +124,9 @@ const results = await pipeline.exec();
 
 ```typescript
 const pipeline = redis.pipeline();
-pipeline.set("key1", "value1");
-pipeline.set("key2", "value2");
-pipeline.get("key1");
+pipeline.set('key1', 'value1');
+pipeline.set('key2', 'value2');
+pipeline.get('key1');
 const results = await pipeline.exec();
 // Results: ["OK", "OK", "value1"]
 ```
@@ -136,20 +136,20 @@ const results = await pipeline.exec();
 **ioredis:**
 
 ```typescript
-const hash = { name: "Alice", age: "30" }; // Must be strings
-await redis.hmset("user:1", hash);
+const hash = { name: 'Alice', age: '30' }; // Must be strings
+await redis.hmset('user:1', hash);
 
-const retrieved = await redis.hgetall("user:1");
+const retrieved = await redis.hgetall('user:1');
 console.log(typeof retrieved.age); // "string"
 ```
 
 **@upstash/redis:**
 
 ```typescript
-const hash = { name: "Alice", age: 30 }; // Native types
-await redis.hset("user:1", hash);
+const hash = { name: 'Alice', age: 30 }; // Native types
+await redis.hset('user:1', hash);
 
-const retrieved = await redis.hgetall("user:1");
+const retrieved = await redis.hgetall('user:1');
 console.log(typeof retrieved.age); // "number"
 ```
 

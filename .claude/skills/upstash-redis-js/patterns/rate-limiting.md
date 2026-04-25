@@ -20,7 +20,7 @@ Control request rates to prevent abuse and ensure fair resource usage. Use count
 ## Examples
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
@@ -42,10 +42,10 @@ async function simpleRateLimit(userId: string, limit: number = 10, window: numbe
 }
 
 // Usage
-const result = await simpleRateLimit("user:123", 10, 60);
+const result = await simpleRateLimit('user:123', 10, 60);
 
 if (!result.allowed) {
-  throw new Error("Rate limit exceeded");
+  throw new Error('Rate limit exceeded');
 }
 
 // Sliding window rate limiter using sorted set
@@ -111,24 +111,24 @@ async function tokenBucketRateLimit(userId: string, capacity: number = 10, rate:
 
 // Production: Use @upstash/ratelimit
 // npm install @upstash/ratelimit
-import { Ratelimit } from "@upstash/ratelimit";
+import { Ratelimit } from '@upstash/ratelimit';
 
 // Fixed window
 const fixedWindowLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.fixedWindow(10, "60 s"),
+  limiter: Ratelimit.fixedWindow(10, '60 s'),
 });
 
 // Sliding window
 const slidingWindowLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(10, "60 s"),
+  limiter: Ratelimit.slidingWindow(10, '60 s'),
 });
 
 // Token bucket
 const tokenBucketLimiter = new Ratelimit({
   redis,
-  limiter: Ratelimit.tokenBucket(10, "1 s", 10),
+  limiter: Ratelimit.tokenBucket(10, '1 s', 10),
 });
 
 // Usage
@@ -137,7 +137,7 @@ async function handleRequest(userId: string) {
 
   if (!success) {
     return {
-      error: "Rate limit exceeded",
+      error: 'Rate limit exceeded',
       limit,
       remaining,
       reset,
@@ -145,11 +145,11 @@ async function handleRequest(userId: string) {
   }
 
   // Process request
-  return { data: "Success", remaining };
+  return { data: 'Success', remaining };
 }
 
 // Multi-tier rate limiting
-async function multiTierRateLimit(userId: string, tier: "free" | "pro") {
+async function multiTierRateLimit(userId: string, tier: 'free' | 'pro') {
   const limits = {
     free: { requests: 100, window: 3600 },
     pro: { requests: 1000, window: 3600 },

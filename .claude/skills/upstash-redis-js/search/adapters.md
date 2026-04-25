@@ -17,19 +17,19 @@
 ### With @upstash/redis (HTTP)
 
 ```typescript
-import { Redis, s } from "@upstash/redis";
+import { Redis, s } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
 const index = await redis.search.createIndex({
-  name: "products",
-  prefix: "product:",
-  dataType: "json",
-  schema: s.object({ name: s.string(), price: s.number("F64") }),
+  name: 'products',
+  prefix: 'product:',
+  dataType: 'json',
+  schema: s.object({ name: s.string(), price: s.number('F64') }),
 });
 
 const results = await index.query({
-  filter: { name: { $eq: "laptop" } },
+  filter: { name: { $eq: 'laptop' } },
   select: { name: true, price: true },
 });
 ```
@@ -37,8 +37,8 @@ const results = await index.query({
 ### With node-redis (TCP)
 
 ```typescript
-import { createClient } from "redis";
-import { createSearch, s } from "@upstash/search-redis";
+import { createClient } from 'redis';
+import { createSearch, s } from '@upstash/search-redis';
 
 const client = createClient({ url: process.env.REDIS_URL });
 await client.connect();
@@ -46,14 +46,14 @@ await client.connect();
 const search = createSearch(client);
 
 const index = await search.createIndex({
-  name: "products",
-  prefix: "product:",
-  dataType: "json",
-  schema: s.object({ name: s.string(), price: s.number("F64") }),
+  name: 'products',
+  prefix: 'product:',
+  dataType: 'json',
+  schema: s.object({ name: s.string(), price: s.number('F64') }),
 });
 
 const results = await index.query({
-  filter: { name: { $eq: "laptop" } },
+  filter: { name: { $eq: 'laptop' } },
   select: { name: true, price: true },
 });
 
@@ -63,22 +63,22 @@ await client.disconnect();
 ### With ioredis (TCP)
 
 ```typescript
-import IORedis from "ioredis";
-import { createSearch, s } from "@upstash/search-ioredis";
+import IORedis from 'ioredis';
+import { createSearch, s } from '@upstash/search-ioredis';
 
 const ioredis = new IORedis(process.env.REDIS_URL);
 
 const search = createSearch(ioredis);
 
 const index = await search.createIndex({
-  name: "products",
-  prefix: "product:",
-  dataType: "json",
-  schema: s.object({ name: s.string(), price: s.number("F64") }),
+  name: 'products',
+  prefix: 'product:',
+  dataType: 'json',
+  schema: s.object({ name: s.string(), price: s.number('F64') }),
 });
 
 const results = await index.query({
-  filter: { name: { $eq: "laptop" } },
+  filter: { name: { $eq: 'laptop' } },
   select: { name: true, price: true },
 });
 

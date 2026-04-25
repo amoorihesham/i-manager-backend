@@ -17,46 +17,46 @@ Query documents from a search index using type-safe filters with support for pag
 ### Basic Query
 
 ```typescript
-import { Redis, s } from "@upstash/redis";
+import { Redis, s } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
 const index = await redis.search.createIndex({
-  name: "products",
-  prefix: "product:",
-  dataType: "json",
+  name: 'products',
+  prefix: 'product:',
+  dataType: 'json',
   schema: s.object({
     name: s.string(),
-    price: s.number("F64"),
+    price: s.number('F64'),
     category: s.keyword(),
     inStock: s.boolean(),
   }),
 });
 
 // Insert data
-await redis.json.set("product:1", "$", {
-  name: "Gaming Laptop",
+await redis.json.set('product:1', '$', {
+  name: 'Gaming Laptop',
   price: 1299.99,
-  category: "electronics",
+  category: 'electronics',
   inStock: true,
 });
-await redis.json.set("product:2", "$", {
-  name: "Wireless Mouse",
+await redis.json.set('product:2', '$', {
+  name: 'Wireless Mouse',
   price: 29.99,
-  category: "electronics",
+  category: 'electronics',
   inStock: true,
 });
-await redis.json.set("product:3", "$", {
-  name: "Laptop Stand",
+await redis.json.set('product:3', '$', {
+  name: 'Laptop Stand',
   price: 49.99,
-  category: "accessories",
+  category: 'accessories',
   inStock: false,
 });
 await index.waitIndexing();
 
 // Query with filter and return data
 const results = await index.query({
-  filter: { category: { $eq: "electronics" } },
+  filter: { category: { $eq: 'electronics' } },
   select: { name: true, price: true },
 });
 // [
@@ -80,7 +80,7 @@ const keysOnly = await index.query({
 
 ```typescript
 const page2 = await index.query({
-  filter: { category: { $eq: "electronics" } },
+  filter: { category: { $eq: 'electronics' } },
   select: { name: true },
   limit: 10,
   offset: 10, // skip first 10 results
@@ -93,7 +93,7 @@ const page2 = await index.query({
 const cheapest = await index.query({
   filter: { inStock: { $eq: true } },
   select: { name: true, price: true },
-  orderBy: { price: "ASC" },
+  orderBy: { price: 'ASC' },
 });
 ```
 
@@ -102,9 +102,9 @@ const cheapest = await index.query({
 ```typescript
 // Rank by relevance with a score modifier
 const results = await index.query({
-  filter: { name: { $eq: "laptop" } },
+  filter: { name: { $eq: 'laptop' } },
   select: { name: true },
-  scoreFunc: { field: "name", modifier: "LOG1P" },
+  scoreFunc: { field: 'name', modifier: 'LOG1P' },
 });
 // Available modifiers: LOG, LOG1P, LOG2P, LN, LN1P, LN2P, SQRT, SQUARE, RECIPROCAL, NONE
 ```
@@ -113,12 +113,12 @@ const results = await index.query({
 
 ```typescript
 const highlighted = await index.query({
-  filter: { name: { $eq: "laptop" } },
+  filter: { name: { $eq: 'laptop' } },
   select: { name: true },
   highlight: {
-    fields: ["name"],
-    preTag: "<mark>", // optional, default <em>
-    postTag: "</mark>", // optional, default </em>
+    fields: ['name'],
+    preTag: '<mark>', // optional, default <em>
+    postTag: '</mark>', // optional, default </em>
   },
 });
 // data.name: "Gaming <mark>Laptop</mark>"
@@ -201,12 +201,12 @@ const highlighted = await index.query({
 ```typescript
 {
   brand: {
-    $eq: "Apple";
+    $eq: 'Apple';
   }
 }
 {
   brand: {
-    $in: ["Apple", "Samsung"];
+    $in: ['Apple', 'Samsung'];
   }
 }
 ```
@@ -260,8 +260,8 @@ Boost the score of specific conditions:
 ```typescript
 {
   $must: [
-    { name: { $eq: "laptop", $boost: 2.0 } }, // double the score weight
-    { category: { $eq: "electronics", $boost: 0.5 } },
+    { name: { $eq: 'laptop', $boost: 2.0 } }, // double the score weight
+    { category: { $eq: 'electronics', $boost: 0.5 } },
   ];
 }
 ```
@@ -272,7 +272,7 @@ Count matching documents without returning them:
 
 ```typescript
 const { count } = await index.count({
-  filter: { category: { $eq: "electronics" } },
+  filter: { category: { $eq: 'electronics' } },
 });
 // count: 2
 ```

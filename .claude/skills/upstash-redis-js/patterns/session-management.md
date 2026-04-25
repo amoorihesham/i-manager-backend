@@ -21,7 +21,7 @@ Store user sessions in Redis with automatic serialization and TTL-based expirati
 ## Examples
 
 ```typescript
-import { Redis } from "@upstash/redis";
+import { Redis } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
@@ -53,7 +53,7 @@ async function updateSession(sessionId: string, updates: any) {
   const current = await redis.get<any>(`session:${sessionId}`);
 
   if (!current) {
-    throw new Error("Session not found");
+    throw new Error('Session not found');
   }
 
   await redis.set(
@@ -79,7 +79,7 @@ async function login(email: string, password: string) {
   const user = await verifyCredentials(email, password);
 
   if (!user) {
-    throw new Error("Invalid credentials");
+    throw new Error('Invalid credentials');
   }
 
   // Create session
@@ -126,11 +126,7 @@ async function createMultiDeviceSession(userId: string, deviceInfo: any) {
   const sessionId = crypto.randomUUID();
 
   // Store session
-  await redis.set(
-    `session:${sessionId}`,
-    { userId, ...deviceInfo, createdAt: Date.now() },
-    { ex: 3600 }
-  );
+  await redis.set(`session:${sessionId}`, { userId, ...deviceInfo, createdAt: Date.now() }, { ex: 3600 });
 
   // Track in user's session list
   await redis.sadd(`user:${userId}:sessions`, sessionId);
@@ -212,6 +208,6 @@ async function cleanupExpiredSessions(userId: string) {
 
 // Helper placeholder
 async function verifyCredentials(email: string, password: string) {
-  return { id: "123", email, name: "User", role: "user" };
+  return { id: '123', email, name: 'User', role: 'user' };
 }
 ```

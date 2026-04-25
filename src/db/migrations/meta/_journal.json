@@ -15,6 +15,13 @@
       "when": 1777130591061,
       "tag": "0001_dusty_falcon",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1777138312134,
+      "tag": "0002_solid_falcon",
+      "breakpoints": true
     }
   ]
 }

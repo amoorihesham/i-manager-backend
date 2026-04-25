@@ -16,18 +16,18 @@ Create, inspect, and drop search indexes. Wait for indexing to complete after da
 ### Create an Index
 
 ```typescript
-import { Redis, s } from "@upstash/redis";
+import { Redis, s } from '@upstash/redis';
 
 const redis = Redis.fromEnv();
 
 // JSON index with nested schema
 const index = await redis.search.createIndex({
-  name: "products",
-  prefix: "product:",
-  dataType: "json",
+  name: 'products',
+  prefix: 'product:',
+  dataType: 'json',
   schema: s.object({
     name: s.string(),
-    price: s.number("F64"),
+    price: s.number('F64'),
     metadata: s.object({
       brand: s.facet(),
       tags: s.keyword(),
@@ -37,12 +37,12 @@ const index = await redis.search.createIndex({
 
 // Hash index (flat schema only)
 const hashIndex = await redis.search.createIndex({
-  name: "sessions",
-  prefix: "session:",
-  dataType: "hash",
+  name: 'sessions',
+  prefix: 'session:',
+  dataType: 'hash',
   schema: {
-    userId: { type: "TEXT" as const },
-    lastActive: { type: "DATE" as const },
+    userId: { type: 'TEXT' as const },
+    lastActive: { type: 'DATE' as const },
   },
 });
 ```
@@ -51,10 +51,10 @@ const hashIndex = await redis.search.createIndex({
 
 ```typescript
 const index = await redis.search.createIndex({
-  name: "articles",
-  prefix: ["article:", "post:"], // multiple prefixes
-  dataType: "json",
-  language: "english", // stemming language
+  name: 'articles',
+  prefix: ['article:', 'post:'], // multiple prefixes
+  dataType: 'json',
+  language: 'english', // stemming language
   skipInitialScan: false, // scan existing keys (default)
   existsOk: true, // don't error if index already exists
   schema: s.object({
@@ -70,15 +70,15 @@ const index = await redis.search.createIndex({
 ```typescript
 // If you already created the index and just need a reference
 const index = redis.search.index({
-  name: "products",
+  name: 'products',
   schema: s.object({
     name: s.string(),
-    price: s.number("F64"),
+    price: s.number('F64'),
   }),
 });
 
 // Without schema (untyped - no filter/select type safety)
-const untypedIndex = redis.search.index({ name: "products" });
+const untypedIndex = redis.search.index({ name: 'products' });
 ```
 
 ### Describe an Index
@@ -94,7 +94,7 @@ const description = await index.describe();
 // }
 
 // Returns null if index doesn't exist
-const missing = await redis.search.index({ name: "nonexistent" }).describe();
+const missing = await redis.search.index({ name: 'nonexistent' }).describe();
 // null
 ```
 
@@ -102,14 +102,14 @@ const missing = await redis.search.index({ name: "nonexistent" }).describe();
 
 ```typescript
 // After inserting/updating/deleting data, wait for index to catch up
-await redis.json.set("product:1", "$", { name: "Laptop", price: 999 });
-await redis.json.set("product:2", "$", { name: "Mouse", price: 29 });
-await redis.json.set("product:3", "$", { name: "Keyboard", price: 79 });
+await redis.json.set('product:1', '$', { name: 'Laptop', price: 999 });
+await redis.json.set('product:2', '$', { name: 'Mouse', price: 29 });
+await redis.json.set('product:3', '$', { name: 'Keyboard', price: 79 });
 
 await index.waitIndexing(); // blocks until all pending docs are indexed
 
 // Queries now reflect the latest data
-const results = await index.query({ filter: { name: { $eq: "Laptop" } } });
+const results = await index.query({ filter: { name: { $eq: 'Laptop' } } });
 ```
 
 ### Drop an Index
