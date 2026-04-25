@@ -1,0 +1,14 @@
+export const STATUS_CODES = {
+  INTERNAL_SERVER_ERROR: 500,
+  UNAUTHORIZED: 401,
+  OK: 200,
+  CREATED: 201,
+  NOT_FOUND: 404,
+  BAD_REQUEST: 400,
+  FORBIDDEN: 403,
+} as const;
+
+export const PROCESS_EXIT_CODE = {
+  SUCCESS: 0,
+  FAILURE: 1,
+} as const;
