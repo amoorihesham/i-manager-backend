@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
+import { jwtPayloadType } from '../types/index.js';
 
-export function _generateJwtToken(payload: any, secret: string, opts: jwt.SignOptions) {
+export function _generateJwtToken(payload: jwtPayloadType, secret: string, opts: jwt.SignOptions) {
   return jwt.sign(payload, secret, opts);
 }
 

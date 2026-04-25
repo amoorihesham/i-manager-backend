@@ -1,4 +1,4 @@
-import { pgEnum, pgTable, uuid, varchar } from 'drizzle-orm/pg-core';
+import { pgEnum, pgTable, timestamp, uuid, varchar } from 'drizzle-orm/pg-core';
 
 const VARCHAR_DEFAULT_LENGTH = 255;
 
@@ -11,4 +11,6 @@ export const usersTable = pgTable('users', {
   password: varchar('password', { length: VARCHAR_DEFAULT_LENGTH }).notNull(),
   avatar: varchar('avatar', { length: VARCHAR_DEFAULT_LENGTH }),
   role: roleEnum('role').notNull().default('user'),
+  createdAt: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),
 });
