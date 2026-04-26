@@ -90,7 +90,7 @@ export const billingService = (
     },
 
     startCheckout: async ({ userId, tier }) => {
-      if (!PLAN_TIERS.includes(tier) || tier === 'free') {
+      if (!PLAN_TIERS.includes(tier) || tier === ('free' as PlanTier)) {
         throw new BadRequestError('Invalid tier for checkout', 'INVALID_TIER');
       }
       const { customerId } = await ensureCustomer(userId);

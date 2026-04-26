@@ -57,7 +57,7 @@ export const tasksService = (db: Database) => ({
     const task = await loadTaskOrThrow(db, taskId);
     await loadProjectMembership(db, task.projectId, userId);
 
-    if (input.assigneeId !== undefined) {
+    if (input.assigneeId !== undefined && input.assigneeId !== null) {
       const assigneeIsMember = await isProjectMember(db, task.projectId, input.assigneeId);
       if (!assigneeIsMember) throw new BadRequestError('Assignee must be a project member', 'INVALID_ASSIGNEE');
     }

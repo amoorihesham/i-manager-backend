@@ -6,6 +6,14 @@ import { loginJsonSchema, registerJsonSchema } from './schemas/index.js';
 export const authRoutes = (fastify: FastifyInstance): void => {
   const controller = authController(getDatabase(), fastify.config);
 
-  fastify.post('/register', { schema: { body: registerJsonSchema } }, controller.register);
-  fastify.post('/login', { schema: { body: loginJsonSchema } }, controller.login);
+  fastify.post(
+    '/register',
+    { schema: { tags: ['auth'], summary: 'Register', description: 'Register', body: registerJsonSchema } },
+    controller.register
+  );
+  fastify.post(
+    '/login',
+    { schema: { tags: ['auth'], summary: 'Login', description: 'Login', body: loginJsonSchema } },
+    controller.login
+  );
 };

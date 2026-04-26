@@ -22,7 +22,26 @@ export const buildApp = async (): Promise<FastifyInstance> => {
   });
 
   await app.register(import('@fastify/env'), { dotenv: true, schema: fastifyEnvSchema });
+  await app.register(import('@fastify/cors'), { credentials: true, origin: app.config.APP_FRONTEND_URL });
   await app.register(import('@fastify/cookie'));
+  await app.register(import('@fastify/swagger'), {
+    openapi: {
+      info: {
+        title: 'i-Manager API',
+        description: 'API Documentation',
+        version: '1.0.0',
+      },
+      components: {
+        securitySchemes: {
+          apiKeyAuth: {
+            type: 'apiKey',
+            name: 'accessToken',
+            in: 'header',
+          },
+        },
+      },
+    },
+  });
 
   createDatabaseConnection({ connectionString: app.config.DATABASE_URL, max: app.config.DATABASE_POOL_SIZE });
 
@@ -40,6 +59,7 @@ export const buildApp = async (): Promise<FastifyInstance> => {
     },
     { prefix: 'api/v1' }
   );
-
+  await app.ready();
+  app.swagger();
   return await app;
 };
