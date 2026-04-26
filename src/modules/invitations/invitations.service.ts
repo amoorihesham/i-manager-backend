@@ -17,11 +17,90 @@ const generateToken = (): string => randomBytes(32).toString('hex');
 
 const lower = (column: typeof usersTable.email | typeof invitationsTable.email) => sql`lower(${column})`;
 
-export const invitationsService = (db: Database, config: Env) => ({
+const resolveResourceName = async (
+  db: Database,
+  scope: string,
+  workspaceId: string | null,
+  projectId: string | null
+): Promise<string> => {
+  if (scope === 'workspace' && workspaceId !== null) {
+    const ws = await db.query.workspacesTable.findFirst({ where: eq(workspacesTable.id, workspaceId) });
+    return ws?.name ?? '';
+  }
+  if (scope === 'project' && projectId !== null) {
+    const p = await db.query.projectsTable.findFirst({ where: eq(projectsTable.id, projectId) });
+    return p?.name ?? '';
+  }
+  return '';
+};
+
+const assertRevokePermission = async (
+  db: Database,
+  scope: string,
+  workspaceId: string | null,
+  projectId: string | null,
+  requesterId: string
+): Promise<void> => {
+  if (scope === 'workspace' && workspaceId !== null) {
+    const membership = await db.query.workspaceMembersTable.findFirst({
+      where: and(eq(workspaceMembersTable.workspaceId, workspaceId), eq(workspaceMembersTable.userId, requesterId)),
+    });
+    if (membership === undefined || (membership.role !== 'owner' && membership.role !== 'admin')) {
+      throw new ForbiddenError('Not allowed to revoke this invitation');
+    }
+    return;
+  }
+  if (scope === 'project' && projectId !== null) {
+    const membership = await db.query.projectMembersTable.findFirst({
+      where: and(eq(projectMembersTable.projectId, projectId), eq(projectMembersTable.userId, requesterId)),
+    });
+    if (membership?.role !== 'admin') {
+      throw new ForbiddenError('Not allowed to revoke this invitation');
+    }
+  }
+};
+
+type MemberRole = 'admin' | 'member';
+
+const toMemberRole = (role: string): MemberRole => (role === 'admin' ? 'admin' : 'member');
+
+export const invitationsService = (
+  db: Database,
+  config: Env
+): {
+  createWorkspaceInvitation: (params: {
+    workspaceId: string;
+    email: string;
+    role: MemberRole;
+    invitedById: string;
+  }) => Promise<typeof invitationsTable.$inferSelect>;
+  createProjectInvitation: (params: {
+    projectId: string;
+    workspaceId: string;
+    email: string;
+    role: MemberRole;
+    invitedById: string;
+  }) => Promise<typeof invitationsTable.$inferSelect>;
+  preview: (token: string) => Promise<{
+    scope: string;
+    role: string;
+    resourceName: string;
+    inviterUsername: string | null;
+    email: string;
+    status: string;
+    expiresAt: Date;
+  }>;
+  accept: (params: {
+    token: string;
+    userId: string;
+    userEmail: string;
+  }) => Promise<typeof invitationsTable.$inferSelect>;
+  revoke: (invitationId: string, requesterId: string) => Promise<void>;
+} => ({
   createWorkspaceInvitation: async (params: {
     workspaceId: string;
     email: string;
-    role: 'admin' | 'member';
+    role: MemberRole;
     invitedById: string;
   }) => {
     const workspace = await db.query.workspacesTable.findFirst({
@@ -148,16 +227,10 @@ export const invitationsService = (db: Database, config: Env) => ({
   preview: async (token: string) => {
     const inv = await db.query.invitationsTable.findFirst({ where: eq(invitationsTable.token, token) });
     if (inv === undefined) throw new NotFoundError('Invitation not found');
-    const inviter = await db.query.usersTable.findFirst({ where: eq(usersTable.id, inv.invitedById) });
-
-    let resourceName = '';
-    if (inv.scope === 'workspace' && inv.workspaceId !== null) {
-      const ws = await db.query.workspacesTable.findFirst({ where: eq(workspacesTable.id, inv.workspaceId) });
-      resourceName = ws?.name ?? '';
-    } else if (inv.scope === 'project' && inv.projectId !== null) {
-      const p = await db.query.projectsTable.findFirst({ where: eq(projectsTable.id, inv.projectId) });
-      resourceName = p?.name ?? '';
-    }
+    const [inviter, resourceName] = await Promise.all([
+      db.query.usersTable.findFirst({ where: eq(usersTable.id, inv.invitedById) }),
+      resolveResourceName(db, inv.scope, inv.workspaceId, inv.projectId),
+    ]);
 
     return {
       scope: inv.scope,
@@ -190,7 +263,7 @@ export const invitationsService = (db: Database, config: Env) => ({
           .values({
             workspaceId: inv.workspaceId,
             userId: params.userId,
-            role: inv.role as 'admin' | 'member',
+            role: toMemberRole(inv.role),
           })
           .onConflictDoNothing();
       } else if (inv.scope === 'project' && inv.projectId !== null && inv.workspaceId !== null) {
@@ -203,7 +276,7 @@ export const invitationsService = (db: Database, config: Env) => ({
           .values({
             projectId: inv.projectId,
             userId: params.userId,
-            role: inv.role as 'admin' | 'member',
+            role: toMemberRole(inv.role),
           })
           .onConflictDoNothing();
       }
@@ -223,24 +296,7 @@ export const invitationsService = (db: Database, config: Env) => ({
     if (inv.status !== 'pending') throw new BadRequestError('Invitation is no longer pending');
 
     if (inv.invitedById !== requesterId) {
-      if (inv.scope === 'workspace' && inv.workspaceId !== null) {
-        const membership = await db.query.workspaceMembersTable.findFirst({
-          where: and(
-            eq(workspaceMembersTable.workspaceId, inv.workspaceId),
-            eq(workspaceMembersTable.userId, requesterId)
-          ),
-        });
-        if (membership === undefined || (membership.role !== 'owner' && membership.role !== 'admin')) {
-          throw new ForbiddenError('Not allowed to revoke this invitation');
-        }
-      } else if (inv.scope === 'project' && inv.projectId !== null) {
-        const membership = await db.query.projectMembersTable.findFirst({
-          where: and(eq(projectMembersTable.projectId, inv.projectId), eq(projectMembersTable.userId, requesterId)),
-        });
-        if (membership?.role !== 'admin') {
-          throw new ForbiddenError('Not allowed to revoke this invitation');
-        }
-      }
+      await assertRevokePermission(db, inv.scope, inv.workspaceId, inv.projectId, requesterId);
     }
 
     await db.update(invitationsTable).set({ status: 'revoked' }).where(eq(invitationsTable.id, invitationId));

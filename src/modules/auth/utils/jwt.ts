@@ -6,9 +6,9 @@ export function _generateJwtToken(payload: jwtPayloadType, secret: string, opts:
 }
 
 export function _verifyJwtToken(token: string, secret: string): string | jwtPayloadType {
-  return jwt.verify(token, secret) as jwtPayloadType;
+  return jwt.verify(token, secret) as string | jwtPayloadType;
 }
 
 export function _decodeJwtToken(token: string): string | jwtPayloadType | null {
-  return jwt.decode(token) as jwtPayloadType;
+  return jwt.decode(token) as string | jwtPayloadType | null;
 }

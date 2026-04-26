@@ -14,7 +14,7 @@
     "build": "tsup src/main.ts --format esm",
     "format": "prettier --write .",
     "lint": "eslint",
-    "lint:fix": "eslint  --fix",
+    "lint:fix": "eslint --fix",
     "dev": "tsx --watch src/main.ts",
     "start": "node dist/main.js",
     "prepare": "husky"

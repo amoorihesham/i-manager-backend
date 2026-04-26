@@ -12,7 +12,13 @@ const tierFor = async (db: Database, userId: string): Promise<PlanTier> => {
   return sub?.tier ?? 'free';
 };
 
-export const planLimits = (db: Database) => ({
+export const planLimits = (
+  db: Database
+): {
+  assertCanCreateWorkspace: (userId: string) => Promise<void>;
+  assertCanInviteMember: (workspaceOwnerId: string, workspaceId: string) => Promise<void>;
+  assertCanCreateProject: (workspaceOwnerId: string, workspaceId: string) => Promise<void>;
+} => ({
   assertCanCreateWorkspace: async (userId: string): Promise<void> => {
     const tier = await tierFor(db, userId);
     const {

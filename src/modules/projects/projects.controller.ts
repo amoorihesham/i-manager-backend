@@ -8,7 +8,26 @@ import { projectsService } from './projects.service.js';
 import { assertProjectRole, loadProjectOrThrow } from './projects.guards.js';
 import type { CreateProjectInput, InviteToProjectInput, UpdateProjectInput } from './schemas/index.js';
 
-export const projectsController = (db: Database, config: Env) => {
+interface ProjectsController {
+  create: (
+    request: FastifyRequest<{ Params: { workspaceId: string }; Body: CreateProjectInput }>,
+    reply: FastifyReply
+  ) => Promise<void>;
+  listInWorkspace: (request: FastifyRequest<{ Params: { workspaceId: string } }>, reply: FastifyReply) => Promise<void>;
+  getById: (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => Promise<void>;
+  update: (
+    request: FastifyRequest<{ Params: { id: string }; Body: UpdateProjectInput }>,
+    reply: FastifyReply
+  ) => Promise<void>;
+  remove: (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => Promise<void>;
+  listMembers: (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => Promise<void>;
+  invite: (
+    request: FastifyRequest<{ Params: { id: string }; Body: InviteToProjectInput }>,
+    reply: FastifyReply
+  ) => Promise<void>;
+}
+
+export const projectsController = (db: Database, config: Env): ProjectsController => {
   const service = projectsService(db);
   const invitations = invitationsService(db, config);
 

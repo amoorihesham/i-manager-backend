@@ -5,7 +5,13 @@ import { STATUS_CODES } from '@/config/constants.js';
 import { _sendSuccessResponse } from '@/utils/http.js';
 import { invitationsService } from './invitations.service.js';
 
-export const invitationsController = (db: Database, config: Env) => {
+interface InvitationsController {
+  preview: (request: FastifyRequest<{ Params: { token: string } }>, reply: FastifyReply) => Promise<void>;
+  accept: (request: FastifyRequest<{ Params: { token: string } }>, reply: FastifyReply) => Promise<void>;
+  revoke: (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => Promise<void>;
+}
+
+export const invitationsController = (db: Database, config: Env): InvitationsController => {
   const service = invitationsService(db, config);
 
   return {

@@ -13,7 +13,17 @@ export default [
       globals: globals.node,
     },
   },
-  { rules: { '@typescript-eslint/no-magic-numbers': 'off', 'no-console': 'off' } },
+  {
+    rules: {
+      '@typescript-eslint/no-magic-numbers': 'off',
+      'no-console': 'off',
+      '@typescript-eslint/init-declarations': 'off',
+      '@typescript-eslint/prefer-destructuring': 'warn',
+      '@typescript-eslint/max-params': 'warn',
+      '@typescript-eslint/explicit-function-return-type': 'warn',
+      '@typescript-eslint/no-unsafe-type-assertion': 'warn',
+    },
+  },
   eslintConfigPrettier,
   {
     ignores: ['dist/**', 'node_modules/**'],

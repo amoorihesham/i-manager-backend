@@ -9,7 +9,27 @@ import { assertWorkspaceRole, loadWorkspaceOrThrow } from './workspaces.guards.j
 import { planLimits } from '@/modules/billing/plan-limits.guard.js';
 import type { CreateWorkspaceInput, InviteToWorkspaceInput, UpdateWorkspaceInput } from './schemas/index.js';
 
-export const workspacesController = (db: Database, config: Env) => {
+interface WorkspacesController {
+  create: (request: FastifyRequest<{ Body: CreateWorkspaceInput }>, reply: FastifyReply) => Promise<void>;
+  list: (request: FastifyRequest, reply: FastifyReply) => Promise<void>;
+  getById: (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => Promise<void>;
+  update: (
+    request: FastifyRequest<{ Params: { id: string }; Body: UpdateWorkspaceInput }>,
+    reply: FastifyReply
+  ) => Promise<void>;
+  remove: (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => Promise<void>;
+  listMembers: (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => Promise<void>;
+  removeMember: (
+    request: FastifyRequest<{ Params: { id: string; userId: string } }>,
+    reply: FastifyReply
+  ) => Promise<void>;
+  invite: (
+    request: FastifyRequest<{ Params: { id: string }; Body: InviteToWorkspaceInput }>,
+    reply: FastifyReply
+  ) => Promise<void>;
+}
+
+export const workspacesController = (db: Database, config: Env): WorkspacesController => {
   const service = workspacesService(db);
   const invitations = invitationsService(db, config);
 

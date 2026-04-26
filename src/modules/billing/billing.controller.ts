@@ -46,7 +46,7 @@ export const billingController = (db: Database, config: Env): BillingController 
         throw new BadRequestError('Webhook body must be a buffer');
       }
 
-      let event: Stripe.Event | null = null;
+      let event: Stripe.Event;
       try {
         event = service.constructWebhookEvent(body, signature);
       } catch (err) {

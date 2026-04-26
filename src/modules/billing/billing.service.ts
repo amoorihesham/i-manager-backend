@@ -61,13 +61,13 @@ export const billingService = (
       },
     } = sub;
     const mappedTier = stripePriceIdToTier(config)[priceId];
-    const tier: PlanTier = overrides.tier !== undefined ? mappedTier : 'free';
+    const tier: PlanTier = overrides.tier === undefined ? mappedTier : 'free';
     const status = overrides.status ?? sub.status;
-    const { current_period_end: currentPeriodEnd } = sub as unknown as { current_period_end?: number };
+    const { current_period_end: currentPeriodEnd } = sub as unknown as { current_period_end?: number | undefined };
     const periodEnd = typeof currentPeriodEnd === 'number' ? new Date(currentPeriodEnd * 1000) : null;
 
     const target =
-      userId !== null ? eq(subscriptionsTable.userId, userId) : eq(subscriptionsTable.stripeCustomerId, customerId);
+      userId === null ? eq(subscriptionsTable.stripeCustomerId, customerId) : eq(subscriptionsTable.userId, userId);
 
     await db
       .update(subscriptionsTable)

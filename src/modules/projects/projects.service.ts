@@ -10,7 +10,24 @@ import { loadWorkspaceMembership, loadWorkspaceOrThrow } from '@/modules/workspa
 import { assertProjectRole, loadProjectMembership, loadProjectOrThrow } from './projects.guards.js';
 import type { CreateProjectInput, UpdateProjectInput } from './schemas/index.js';
 
-export const projectsService = (db: Database) => ({
+export const projectsService = (
+  db: Database
+): {
+  create: (
+    workspaceId: string,
+    userId: string,
+    input: CreateProjectInput
+  ) => Promise<typeof projectsTable.$inferSelect>;
+  listInWorkspace: (workspaceId: string, userId: string) => Promise<Array<typeof projectsTable.$inferSelect>>;
+  getById: (projectId: string, userId: string) => Promise<typeof projectsTable.$inferSelect>;
+  update: (projectId: string, userId: string, input: UpdateProjectInput) => Promise<typeof projectsTable.$inferSelect>;
+  remove: (projectId: string, userId: string) => Promise<void>;
+  listMembers: (
+    projectId: string,
+    userId: string
+  ) => Promise<Array<{ userId: string; role: string; joinedAt: Date; username: string; email: string }>>;
+  assertInviteeIsWorkspaceMember: (workspaceId: string, email: string) => Promise<void>;
+} => ({
   create: async (workspaceId: string, userId: string, input: CreateProjectInput) => {
     await loadWorkspaceMembership(db, workspaceId, userId);
     const ws = await loadWorkspaceOrThrow(db, workspaceId);

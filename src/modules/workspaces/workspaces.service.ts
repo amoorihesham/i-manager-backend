@@ -8,7 +8,30 @@ import { ConflictError } from '@/utils/http-error.js';
 import { assertWorkspaceRole, loadWorkspaceMembership, loadWorkspaceOrThrow } from './workspaces.guards.js';
 import type { CreateWorkspaceInput, UpdateWorkspaceInput } from './schemas/index.js';
 
-export const workspacesService = (db: Database) => ({
+export const workspacesService = (
+  db: Database
+): {
+  create: (userId: string, input: CreateWorkspaceInput) => Promise<typeof workspacesTable.$inferSelect>;
+  listForUser: (
+    userId: string
+  ) => Promise<
+    Array<{ id: string; name: string; ownerId: string; role: 'owner' | 'admin' | 'member'; createdAt: Date }>
+  >;
+  getById: (workspaceId: string, userId: string) => Promise<typeof workspacesTable.$inferSelect>;
+  update: (
+    workspaceId: string,
+    userId: string,
+    input: UpdateWorkspaceInput
+  ) => Promise<typeof workspacesTable.$inferSelect>;
+  remove: (workspaceId: string, userId: string) => Promise<void>;
+  listMembers: (
+    workspaceId: string,
+    userId: string
+  ) => Promise<
+    Array<{ userId: string; role: 'owner' | 'admin' | 'member'; joinedAt: Date; username: string; email: string }>
+  >;
+  removeMember: (workspaceId: string, requesterId: string, targetUserId: string) => Promise<void>;
+} => ({
   create: async (userId: string, input: CreateWorkspaceInput) => {
     await planLimits(db).assertCanCreateWorkspace(userId);
 

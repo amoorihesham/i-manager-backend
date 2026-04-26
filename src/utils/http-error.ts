@@ -6,7 +6,8 @@ export class HttpError extends Error {
 
   constructor(statusCode: number, code: string, message: string) {
     super(message);
-    this.name = this.constructor.name;
+    const { name } = this.constructor;
+    this.name = name;
     this.statusCode = statusCode;
     this.code = code;
   }

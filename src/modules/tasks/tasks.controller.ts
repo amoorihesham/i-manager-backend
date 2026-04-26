@@ -5,7 +5,21 @@ import { _sendSuccessResponse } from '@/utils/http.js';
 import { tasksService } from './tasks.service.js';
 import type { CreateTaskInput, UpdateTaskInput } from './schemas/index.js';
 
-export const tasksController = (db: Database) => {
+interface TasksController {
+  create: (
+    request: FastifyRequest<{ Params: { projectId: string }; Body: CreateTaskInput }>,
+    reply: FastifyReply
+  ) => Promise<void>;
+  listInProject: (request: FastifyRequest<{ Params: { projectId: string } }>, reply: FastifyReply) => Promise<void>;
+  getById: (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => Promise<void>;
+  update: (
+    request: FastifyRequest<{ Params: { id: string }; Body: UpdateTaskInput }>,
+    reply: FastifyReply
+  ) => Promise<void>;
+  remove: (request: FastifyRequest<{ Params: { id: string } }>, reply: FastifyReply) => Promise<void>;
+}
+
+export const tasksController = (db: Database): TasksController => {
   const service = tasksService(db);
 
   return {

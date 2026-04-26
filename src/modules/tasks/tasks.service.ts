@@ -19,7 +19,15 @@ const loadTaskOrThrow = async (db: Database, taskId: string) => {
   return task;
 };
 
-export const tasksService = (db: Database) => ({
+export const tasksService = (
+  db: Database
+): {
+  create: (projectId: string, userId: string, input: CreateTaskInput) => Promise<typeof tasksTable.$inferSelect>;
+  listInProject: (projectId: string, userId: string) => Promise<Array<typeof tasksTable.$inferSelect>>;
+  getById: (taskId: string, userId: string) => Promise<typeof tasksTable.$inferSelect>;
+  update: (taskId: string, userId: string, input: UpdateTaskInput) => Promise<typeof tasksTable.$inferSelect>;
+  remove: (taskId: string, userId: string) => Promise<void>;
+} => ({
   create: async (projectId: string, userId: string, input: CreateTaskInput) => {
     await loadProjectMembership(db, projectId, userId);
 
