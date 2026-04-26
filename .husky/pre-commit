@@ -1,0 +1,7 @@
+echo "Running pre-commit hooks..."
+    echo "Running Linter..."
+    pnpm lint
+    echo "Running Linter Fix..."
+    pnpm lint:fix
+    echo "Running Formater..."
+    pnpm format
