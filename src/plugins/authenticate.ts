@@ -14,12 +14,14 @@ export const authenticate = async (request: FastifyRequest, _reply: FastifyReply
   const {
     cookies: { accessToken },
   } = request;
+
   if (accessToken === undefined) throw new UnauthorizedError('No access token');
 
   let decoded: jwtPayloadType | string;
   try {
-    decoded = _verifyJwtToken(accessToken, process.env.JWT_SECRET ?? '');
-  } catch {
+    decoded = _verifyJwtToken(accessToken, request.server.config.JWT_SECRET);
+  } catch (err: unknown) {
+    request.log.error({ err }, 'Token verification failed');
     throw new UnauthorizedError('Invalid or expired token');
   }
 

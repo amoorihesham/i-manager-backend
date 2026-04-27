@@ -4,7 +4,7 @@ import { PROCESS_EXIT_CODE } from './config/constants.js';
 const startServer = async (): Promise<void> => {
   const app = await buildApp();
 
-  await app.listen({ port: app.config.PORT, host: '0.0.0.0' });
+  await app.listen({ port: app.config.PORT, host: app.config.SERVER_LISTENING_HOST });
 };
 
 startServer().catch((err: unknown) => {

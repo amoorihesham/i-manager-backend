@@ -22,7 +22,11 @@ export const buildApp = async (): Promise<FastifyInstance> => {
   });
 
   await app.register(import('@fastify/env'), { dotenv: true, schema: fastifyEnvSchema });
-  await app.register(import('@fastify/cors'), { credentials: true, origin: app.config.APP_FRONTEND_URL });
+  await app.register(import('@fastify/cors'), {
+    credentials: true,
+    origin: app.config.APP_FRONTEND_URL,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  });
   await app.register(import('@fastify/cookie'));
   await app.register(import('@fastify/swagger'), {
     openapi: {
